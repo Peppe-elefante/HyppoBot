@@ -1,9 +1,9 @@
 import os
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes, MessageHandler, filters
 from dotenv import load_dotenv
-from llm.ollama_client import OllamaClient
+from llm.Groq_client import GroqClient
 
 load_dotenv()
 
@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 
 user_languages = {}
+user_topic = {}
 
 MESSAGES = {
     'en': {
@@ -78,8 +79,8 @@ async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 async def topic_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
-
     user_id = query.from_user.id
+    
     language = user_languages.get(user_id, 'en')
     topic = query.data.split('_')[1]
 
@@ -91,6 +92,19 @@ async def topic_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         message = "Topic not found"
 
     await query.edit_message_text(text=message)
+
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
+    user_id = update.effective_user.id
+    topic = user_topic.get(user_id, 'housing')
+
+    response = handle_response(text, topic)
+
+    await update.message.reply_text(response)
+
+def handle_response(text: str, topic: str) -> str:
+    global llm_model
+    return llm_model.generate(text, topic, message_history)
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.effective_user.id
@@ -104,6 +118,9 @@ def main() -> None:
         logger.error("TELEGRAM_BOT_TOKEN not found in environment variables")
         return
 
+    global llm_model
+    llm_model = GroqClient()
+
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))
@@ -111,8 +128,11 @@ def main() -> None:
     application.add_handler(CallbackQueryHandler(language_callback, pattern="^lang_"))
     application.add_handler(CallbackQueryHandler(topic_callback, pattern="^topic_"))
 
+    application.add_handler(MessageHandler(filters.TEXT, handle_message))
+
     logger.info("Starting HyppoBot...")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
+global llm_model
 if __name__ == '__main__':
     main()
