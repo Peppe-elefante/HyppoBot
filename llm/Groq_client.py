@@ -74,8 +74,8 @@ class GroqClient:
                     {"role": "system", "content": sys_prompt},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.7,
-                max_tokens=650
+                temperature=0.5,
+                max_tokens=528
             )
             return response.choices[0].message.content
 
