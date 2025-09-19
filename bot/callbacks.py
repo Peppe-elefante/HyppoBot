@@ -17,6 +17,8 @@ async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         [
             InlineKeyboardButton("Housing" if language == 'en' else "Vivienda", callback_data="topic_housing"),
             InlineKeyboardButton("University" if language == 'en' else "Universidad", callback_data="topic_university"),
+            InlineKeyboardButton("Nightlife" if language == 'en' else "Vida nocturna", callback_data="topic_nightlife"),
+            InlineKeyboardButton("ESN", callback_data="topic_ESN")
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -30,12 +32,16 @@ async def topic_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     user_id = query.from_user.id
 
     language = user_languages.get(user_id, 'en')
-    topic = query.data.split('_')[1]
+    topic = query.data.split('_')[1].lower()
     user_topic[user_id] = topic
     if topic == 'housing':
         message = MESSAGES[language]['housing_info']
     elif topic == 'university':
         message = MESSAGES[language]['university_info']
+    elif topic == 'esn':
+        message = MESSAGES[language]['esn_info']
+    elif topic == 'nightlife':
+        message = MESSAGES[language]['nightlife_info']
     else:
         message = "Topic not found"
 
