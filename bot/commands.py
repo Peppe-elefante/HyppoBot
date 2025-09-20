@@ -1,6 +1,6 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
-from .utils import user_languages, MESSAGES
+from .utils import user_languages, MESSAGES, message_history
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard = [
@@ -10,7 +10,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-
+    message_history = []
     await update.message.reply_text(
         "Welcome to HyppoBot! / Bienvenido a HyppoBot!\n\nPlease select your language / Selecciona tu idioma:",
         reply_markup=reply_markup

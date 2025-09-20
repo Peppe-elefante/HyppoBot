@@ -5,7 +5,7 @@ from telegram import Update
 from dotenv import load_dotenv
 from llm.Groq_client import GroqClient
 from bot.commands import start, help_command
-from bot.callbacks import language_callback, topic_callback
+from bot.callbacks import language_callback
 from bot.message_handlers import handle_message
 from rag.pipeline import RAGPipeline
 
@@ -31,9 +31,7 @@ def main() -> None:
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
-    application.add_handler(CommandHandler("topic", start))
     application.add_handler(CallbackQueryHandler(language_callback, pattern="^lang_"))
-    application.add_handler(CallbackQueryHandler(topic_callback, pattern="^topic_"))
 
     application.add_handler(MessageHandler(filters.TEXT, handle_message))
 

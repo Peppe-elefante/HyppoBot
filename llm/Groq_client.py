@@ -18,67 +18,63 @@ class GroqClient:
 
     def system_prompt(self, information) -> Optional[str]:
         return f"""You are a helpful local expert for Erasmus students in Salerno, Italy.
-                    Your role is to provide practical, accurate information.
-                    to help new international students navigate the city.
+                    Your role is to provide practical, accurate information to help new international students navigate the city.
 
                     Available information:
                     {information}
 
                     Guidelines:
-                    - Give clear, actionable advice based only on the information provided
+                    - Give clear, actionable advice based ONLY on the information provided above
                     - Be friendly and welcoming - remember these are new students who may feel overwhelmed
-                    - If you cannot fully answer their question with the available information, politely direct them to contact ESN (Erasmus Student Network) volunteers for additional help
+                    - Keep responses concise (under 400 words) and avoid unnecessary details
+                    - Focus on the current question - refer to previous messages only if directly relevant
+                    - If you cannot fully answer with the available information, say: "I don't have that specific information, but ESN volunteers can help you with this"
                     - Focus on practical details that will genuinely help students settle in
                     - Use a conversational but informative tone
-                    - Always speak well about Salerno and About the ESN association
+                    - Speak positively about Salerno and the ESN association
 
-                    Answer the student's question now."""
-    
-    def _get_info(self, topic: str, user_prompt):
+                    Answer the student's question directly:"""
+                        
+    def _get_info(self, user_prompt):
         """
-        Get information about a topic from the topics folder
-        Args:
-            topic: The topic to get information about
-        Returns:
-            Content of the topic file or empty string if not found
+        Activates rag pipeline to get info
         """
-        search_string = f"{topic}: {user_prompt}"
-        return self.rag.search(search_string)
+        return self.rag.search(user_prompt)
     
     def _turn_message_into_chat_format(self, messages: list[(str,str)]) -> list[dict]:
         chat = []
         for message in messages:
-            chat.append({"role": "system", "content": message[0]})
-            chat.append({"user": "system", "content": message[1]})
+            chat.append({"role": "user", "content": message[0]})
+            chat.append({"role": "system", "content": message[1]})
         return chat
 
-    def generate(self, prompt: str, topic: str , message_history: Optional[list[(str,str)]]) -> str:
+    def generate(self, prompt: str, message_history: Optional[list[(str,str)]]) -> str:
         """
         Generate a response from the Groq model
         Args:
             prompt: The user's prompt
-            topic: the topic on which the student is asking the question
             message_history: the previous messages in the chat (if there are)
         Returns:
             Generated response from the model
         """
 
-        sys_prompt = self.system_prompt(topic, self._get_info(topic, prompt))
+        sys_prompt = self.system_prompt(self._get_info(prompt))
         if self.language == "es":
             sys_prompt += " You must answer in Spanish."
 
-        chat = [{"role": "system", "content": sys_prompt},
-                {"role": "user", "content": prompt}]
+        chat = [{"role": "system", "content": sys_prompt}]
 
         if message_history:
             chat.extend(self._turn_message_into_chat_format(message_history))
 
+        chat.append({"role": "user", "content": prompt})
+        print(chat)
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=chat,
                 temperature=0.5,
-                max_tokens=450
+                max_tokens=400
             )
             return response.choices[0].message.content
 

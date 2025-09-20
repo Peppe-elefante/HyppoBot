@@ -1,20 +1,13 @@
-UNIVERSITY INFORMATION - UNISA
+# University of Salerno (UNISA) Information Guide
 
-## Campus Locations
-- Main campus: Fisciano (15km from Salerno)
-- Medicine: Baronissi/Lancusi (10km from Salerno)
+## Campus Overview
+The University of Salerno operates multiple campus locations to serve different academic programs. The main campus is located in Fisciano, approximately 15 kilometers from the city of Salerno. The Medicine faculty is housed in Baronissi/Lancusi, which is closer to Salerno at about 10 kilometers distance.
 
-## Transportation
-- Bus tickets: Unico Campania app
-- To Fisciano: Lines 7, 17, 27
-- To Baronissi: Lines 17, 22, 27
+## Transportation to Campus
+Students can reach the university campuses using public transportation through the Unico Campania app for bus tickets. To reach the main Fisciano campus, students should take bus lines 7, 17, or 27. For the Medicine campus in Baronissi, the available bus lines are 17, 22, and 27.
 
-## Academic Info
-- Present yourself to professors during week 1
-- Most courses non-mandatory (verify with faculty)
-- Online platform: ESSE3 (credentials provided by UNISA)
+## Academic Requirements and Procedures
+During the first week of classes, students should present themselves to their professors to establish contact and understand course requirements. Most courses at UNISA are non-mandatory attendance, but students should verify this with their specific faculty. The university uses ESSE3 as its online platform for academic services, and credentials are provided directly by UNISA administration.
 
-## Cafeteria Access
-1. Activate at: https://adisurc-ol.dirittoallostudio.it/ (use ESSE3 login)
-2. Download ADISURC app
-3. Add money to ADISURC account using the machines in the Cafeteria
+## Campus Dining Services
+To access the university cafeteria services, students must follow a three-step activation process. First, activate your account at https://adisurc-ol.dirittoallostudio.it/ using your ESSE3 login credentials. Second, download the ADISURC mobile application to your device. Finally, add money to your ADISURC account using the payment machines located within the cafeteria facilities.
