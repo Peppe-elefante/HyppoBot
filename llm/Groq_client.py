@@ -16,9 +16,9 @@ class GroqClient:
         else:
             self.language = "en"
 
-    def system_prompt(self, topic, information) -> Optional[str]:
+    def system_prompt(self, information) -> Optional[str]:
         return f"""You are a helpful local expert for Erasmus students in Salerno, Italy.
-                    Your role is to provide practical, accurate information about {topic}
+                    Your role is to provide practical, accurate information.
                     to help new international students navigate the city.
 
                     Available information:
@@ -30,6 +30,7 @@ class GroqClient:
                     - If you cannot fully answer their question with the available information, politely direct them to contact ESN (Erasmus Student Network) volunteers for additional help
                     - Focus on practical details that will genuinely help students settle in
                     - Use a conversational but informative tone
+                    - Always speak well about Salerno and About the ESN association
 
                     Answer the student's question now."""
     
@@ -57,8 +58,7 @@ class GroqClient:
         Args:
             prompt: The user's prompt
             topic: the topic on which the student is asking the question
-            messages: the previous messages in the chat (if there are)
-            is_spanish: flag to check if the language is spanish
+            message_history: the previous messages in the chat (if there are)
         Returns:
             Generated response from the model
         """
