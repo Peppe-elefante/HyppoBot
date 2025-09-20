@@ -14,4 +14,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def handle_response(text: str, topic: str) -> str:
     from llm.Groq_client import GroqClient
     llm_model = GroqClient()
-    return llm_model.generate(text, topic, message_history) 
+    response = llm_model.generate(text, topic, message_history) 
+    if message_history > 4:
+        message_history.pop(0)
+    message_history.append((text, response))
+    return response

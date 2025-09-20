@@ -43,9 +43,15 @@ class GroqClient:
         """
         search_string = f"{topic}: {user_prompt}"
         return self.rag.search(search_string)
+    
+    def _turn_message_into_chat_format(self, messages: list[(str,str)]) -> list[dict]:
+        chat = []
+        for message in messages:
+            chat.append({"role": "system", "content": message[0]})
+            chat.append({"user": "system", "content": message[1]})
+        return chat
 
-
-    def generate(self, prompt: str, topic: str , messages: Optional[list[str]]) -> str:
+    def generate(self, prompt: str, topic: str , message_history: Optional[list[(str,str)]]) -> str:
         """
         Generate a response from the Groq model
         Args:
@@ -60,18 +66,19 @@ class GroqClient:
         sys_prompt = self.system_prompt(topic, self._get_info(topic, prompt))
         if self.language == "es":
             sys_prompt += " You must answer in Spanish."
-        if messages:
-            sys_prompt += str(messages)
+
+        chat = [{"role": "system", "content": sys_prompt},
+                {"role": "user", "content": prompt}]
+
+        if message_history:
+            chat.extend(self._turn_message_into_chat_format(message_history))
 
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
-                messages=[
-                    {"role": "system", "content": sys_prompt},
-                    {"role": "user", "content": prompt}
-                ],
+                messages=chat,
                 temperature=0.5,
-                max_tokens=528
+                max_tokens=450
             )
             return response.choices[0].message.content
 
