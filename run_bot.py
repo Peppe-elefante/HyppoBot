@@ -7,6 +7,7 @@ from llm.Groq_client import GroqClient
 from bot.commands import start, help_command
 from bot.callbacks import language_callback, topic_callback
 from bot.message_handlers import handle_message
+from rag.pipeline import RAGPipeline
 
 load_dotenv()
 
@@ -22,9 +23,9 @@ def main() -> None:
     if not TELEGRAM_BOT_TOKEN:
         logger.error("TELEGRAM_BOT_TOKEN not found in environment variables")
         return
+    rag = RAGPipeline("hyppo-data", "sentence-transformers/all-MiniLM-L6-v2")
 
-    global llm_model
-    llm_model = GroqClient()
+    rag.add_text_files("data")
 
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
 
@@ -39,6 +40,6 @@ def main() -> None:
     logger.info("Starting HyppoBot...")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
-global llm_model
+
 if __name__ == '__main__':
     main()

@@ -1,12 +1,14 @@
 import os
 from groq import Groq
 from typing import Optional
+from rag.pipeline import RAGPipeline
 
 class GroqClient:
     def __init__(self, model: str = "llama-3.1-8b-instant"):
         self.model = model
         self.client = Groq(api_key=os.getenv("GROQ_API_KEY"))
         self.language = "en"  # Default language
+        self.rag =  RAGPipeline("hyppo-data", "sentence-transformers/all-MiniLM-L6-v2", recreate_collection=False)
 
     def set_language(self, language: str):
         if language == "es":
@@ -31,7 +33,7 @@ class GroqClient:
 
                     Answer the student's question now."""
     
-    def _get_info(self, topic: str):
+    def _get_info(self, topic: str, user_prompt):
         """
         Get information about a topic from the topics folder
         Args:
@@ -39,14 +41,8 @@ class GroqClient:
         Returns:
             Content of the topic file or empty string if not found
         """
-        try:
-            topic_file = f"llm/topics/{topic.lower()}.txt"
-            with open(topic_file, 'r', encoding='utf-8') as f:
-                return f.read()
-        except FileNotFoundError:
-            return ""
-        except Exception:
-            return ""
+        search_string = f"{topic}: {user_prompt}"
+        return self.rag.search(search_string)
 
 
     def generate(self, prompt: str, topic: str , messages: Optional[list[str]]) -> str:
@@ -61,7 +57,7 @@ class GroqClient:
             Generated response from the model
         """
 
-        sys_prompt = self.system_prompt(topic, self._get_info(topic))
+        sys_prompt = self.system_prompt(topic, self._get_info(topic, prompt))
         if self.language == "es":
             sys_prompt += " You must answer in Spanish."
         if messages:
